@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+JavaFX-Version: 2.2
+JavaFX-Application-Class: se.mbaeumer.fxmessagebox.gui.FXMessageBox
+Created-By: JavaFX Packager
+Main-Class: com/javafx/main/Main
+

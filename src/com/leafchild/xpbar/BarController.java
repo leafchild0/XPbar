@@ -1,9 +1,17 @@
 package com.leafchild.xpbar;
 
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.MapValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import javafx.util.StringConverter;
 import se.mbaeumer.fxmessagebox.MessageBox;
 import se.mbaeumer.fxmessagebox.MessageBoxType;
 
@@ -11,15 +19,21 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
-
 
 public class BarController {
 
     @FXML
-    public Label lvlValue;
+    public TableColumn<Map, String> tnLevel;
     @FXML
-    public Label toTheNextLvlv;
+    public TableColumn<Map, String> tTotal;
+    @FXML
+    public TableColumn<Map, String> tLevel;
+    @FXML
+    public TableView<HashMap<String, String>> tableView;
+    @FXML
+    public MenuItem about;
     @FXML
     private TextField addField;
     @FXML
@@ -36,6 +50,9 @@ public class BarController {
 
     private DBWrapper dbWrapper = DBWrapper.getInstance();
 
+    /**
+     * Init class, called on app start to prepopulate values
+     */
     public void initializeValues(){
 
         //Search data in initialization
@@ -47,25 +64,31 @@ public class BarController {
             totalAmountOfXp = Double.parseDouble(data.get("totalAmountOfXp"));
             currPrBarValue = Double.parseDouble(data.get("currPrBarValue"));
         }
-        lvlValue.setText(currentLevel + "");
-        toTheNextLvlv.setText(((int) currLvlNeededXp) + "");
         pBar.setProgress(currPrBarValue);
         pInd.setProgress(currPrBarValue);
     }
 
+    /**
+     * Default method that will be calling on app start
+     */
     @FXML
     protected void initialize() {
+
         initializeValues();
+        populateTable();
     }
 
-
+    /**
+     * Handles button "Add" click
+     * Add value into table abd progress bar
+     */
     @FXML
     public void handleButtonAction() {
 
         String addValue = addField.getText();
         Double curr = pBar.getProgress();
         if (checkAddValue(addValue)) {
-            currPrBarValue = curr + calculatePersent(Double.parseDouble(addValue));
+            currPrBarValue = curr + calculatePercent(Double.parseDouble(addValue));
             if(currPrBarValue >= 1.0) {
                 showNewOKMessage("New Level!!!");
                 //calculate how much points last adding will cost
@@ -74,16 +97,19 @@ public class BarController {
                 pInd.setProgress(0.0);
                 currLvlNeededXp = currLvlNeededXp + currLvlNeededXp*0.4;
                 currentLevel = currentLevel + 1;
-                currPrBarValue = calculatePersent((currPrBarValue - 1.0)*100);
-                //increase level points
-                lvlValue.setText(currentLevel + "");
-                toTheNextLvlv.setText(((int) currLvlNeededXp) + "");
+                currPrBarValue = calculatePercent((currPrBarValue - 1.0) * 100);
             }
             pBar.setProgress(currPrBarValue);
             pInd.setProgress(currPrBarValue);
 
             //Empty
             addField.setText("");
+
+            //Increase total
+            totalAmountOfXp = totalAmountOfXp + Double.parseDouble(addValue);
+
+            //Update table
+            updateTable();
         }
         else{
             showNewOKMessage("Value should be a number");
@@ -91,6 +117,11 @@ public class BarController {
 
     }
 
+    /**
+     * Verify if user value is correct number
+     * @param addValue - input value from user
+     * @return true if it's number
+     */
     private boolean checkAddValue(String addValue){
 
         if (addValue != null) {
@@ -111,7 +142,12 @@ public class BarController {
         return mb.getMessageBoxResult().name();
     }
 
-    private double calculatePersent(double userInput){
+    /**
+     * Calculates percent depends on current level
+     * @param userInput - user input
+     * @return calculated percent
+     */
+    private double calculatePercent(double userInput){
 
         double result;
         result = userInput/currLvlNeededXp;
@@ -121,11 +157,20 @@ public class BarController {
         return result;
     }
 
+    /**
+     * Saves progress when user clicks on Save in menu
+     */
     @FXML
     public void saveProgress() {
 
         dbWrapper.insertData(collectCurrentData());
         showNewOKMessage("Progress was saved");
+    }
+
+    @FXML
+    public void aboutApp() {
+
+        showNewOKMessage("XP Bar, V 0.2\n Designed by Victor Malyshev\n mailto: vmalyshev0@gmail.com");
     }
 
     public void closeApp(ActionEvent actionEvent) {
@@ -141,6 +186,48 @@ public class BarController {
             }
             primaryStage.close();
         }
+    }
+
+
+    private void populateTable() {
+
+        tLevel.setCellValueFactory(new MapValueFactory<String>("currentLevel"));
+        tLevel.setMinWidth(30);
+        tnLevel.setCellValueFactory(new MapValueFactory<String>("currLvlNeededXp"));
+        tnLevel.setMinWidth(30);
+        tTotal.setCellValueFactory(new MapValueFactory<String>("totalAmountOfXp"));
+        tTotal.setMinWidth(30);
+        tableView.setItems(FXCollections.observableArrayList(collectCurrentData()));
+
+        tableView.setEditable(false);
+        tableView.getSelectionModel().setCellSelectionEnabled(true);
+
+        Callback<TableColumn<Map, String>, TableCell<Map, String>>
+                cellFactoryForMap = new Callback<TableColumn<Map, String>,
+                TableCell<Map, String>>() {
+            @Override
+            public TableCell call(TableColumn p) {
+                TextFieldTableCell cell = new TextFieldTableCell(new StringConverter() {
+                    @Override
+                    public String toString(Object t) {
+                        return t.toString();
+                    }
+                    @Override
+                    public Object fromString(String string) {
+                        return string;
+                    }
+                    //cell.setAlignment(Pos.CENTER);
+                    });
+                cell.setAlignment(Pos.CENTER);
+                return cell;
+
+
+            }
+        };
+        tnLevel.setCellFactory(cellFactoryForMap);
+        tLevel.setCellFactory(cellFactoryForMap);
+        tTotal.setCellFactory(cellFactoryForMap);
+
     }
 
     private HashMap<String, String> collectCurrentData(){
@@ -168,6 +255,25 @@ public class BarController {
         currentLevel = 1;
         currPrBarValue = 0;
         initializeValues();
+        updateTable();
         showNewOKMessage("Progress was removed");
+
+    }
+
+
+    private void updateTable(){
+
+        final ObservableList<HashMap<String, String>> items = tableView.getItems();
+        if( items == null || items.size() == 0) return;
+
+        //final HashMap<String, String> item = tableView.getItems().get(0);
+        items.remove(0);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                items.add(0, collectCurrentData());
+            }
+        });
+
     }
 }

@@ -11,6 +11,7 @@ import javafx.stage.Stage;
  * Project: XPbar
  * Date: 08-May-14
  * Time: 18:40
+ * Main app class
  */
 public class XPBarMain extends Application {
 
@@ -18,9 +19,10 @@ public class XPBarMain extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("xpBar.fxml"));
-        primaryStage.setTitle("XP bar v.0.1, Leafchild");
+        primaryStage.setTitle("XP bar v.0.2, Leafchild");
         primaryStage.setScene(new Scene(root, 600, 400));
         primaryStage.show();
+        //primaryStage.setOnCloseRequest();
 
     }
 
