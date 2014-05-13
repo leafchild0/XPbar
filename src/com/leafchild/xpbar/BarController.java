@@ -250,13 +250,18 @@ public class BarController {
     @FXML
     public void deleteCurrentData() {
 
-        dbWrapper.removeUserData("name", "leafchild");
-        currLvlNeededXp = 100;
-        currentLevel = 1;
-        currPrBarValue = 0;
-        initializeValues();
-        updateTable();
-        showNewOKMessage("Progress was removed");
+        String sure = showNewQuestionMessage("Are you really want to remove all the data?");
+
+        if (sure.equals("YES")) {
+            dbWrapper.removeUserData("name", "leafchild");
+            currLvlNeededXp = 100;
+            currentLevel = 1;
+            currPrBarValue = 0;
+            totalAmountOfXp = 0;
+            initializeValues();
+            updateTable();
+            showNewOKMessage("Progress was removed");
+        }
 
     }
 
