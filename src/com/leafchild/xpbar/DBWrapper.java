@@ -4,6 +4,7 @@ import com.mongodb.*;
 
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -52,15 +53,15 @@ public class DBWrapper {
         table.insert(newData);
     }
 
-    protected HashMap<String, String> searchData(String key, String value){
+    protected ArrayList<HashMap<String, String>> searchData(String key, String value){
 
-        HashMap<String, String> searchResults = new HashMap<>();
+        ArrayList<HashMap<String, String>> searchResults = new ArrayList<>();
         BasicDBObject orderBy = new BasicDBObject("createdDate", -1);
 
         BasicDBObject searchQuery = new BasicDBObject();
         searchQuery.put(key, value);
         //Find values, sort them, and get only last modified data
-        DBCursor cursor = table.find(searchQuery).sort(orderBy).limit(1);
+        DBCursor cursor = table.find(searchQuery).sort(orderBy);
         while (cursor.hasNext()) {
             DBObject tempResult = cursor.next();
             String createdDate = (String) tempResult.get("createdDate");
@@ -69,14 +70,19 @@ public class DBWrapper {
             String totalAmountOfXp = (String) tempResult.get("totalAmountOfXp");
             String currLvlNeededXp = (String) tempResult.get("currLvlNeededXp");
             String currPrBarValue = (String) tempResult.get("currPrBarValue");
+            String description = (String) tempResult.get("description");
 
             //Put them into map
-            searchResults.put("name", name);
-            searchResults.put("currentLevel", level + "");
-            searchResults.put("createdDate", createdDate);
-            searchResults.put("totalAmountOfXp", totalAmountOfXp);
-            searchResults.put("currLvlNeededXp", currLvlNeededXp);
-            searchResults.put("currPrBarValue", currPrBarValue);
+            HashMap<String, String> tempMap = new HashMap<>();
+            tempMap.put("name", name);
+            tempMap.put("currentLevel", level + "");
+            tempMap.put("createdDate", createdDate);
+            tempMap.put("totalAmountOfXp", totalAmountOfXp);
+            tempMap.put("currLvlNeededXp", currLvlNeededXp);
+            tempMap.put("currPrBarValue", currPrBarValue);
+            tempMap.put("description", description);
+
+            searchResults.add(tempMap);
         }
 
         return searchResults;

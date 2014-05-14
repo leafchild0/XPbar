@@ -17,6 +17,7 @@ import se.mbaeumer.fxmessagebox.MessageBoxType;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +36,10 @@ public class BarController {
     @FXML
     public MenuItem about;
     @FXML
+    public TableColumn<Map, String> tDescription;
+    @FXML
+    public TextArea tArea;
+    @FXML
     private TextField addField;
     @FXML
     private Button addButton;
@@ -47,6 +52,7 @@ public class BarController {
     private int currentLevel = 1;
     private double totalAmountOfXp = 0.0;
     private double currPrBarValue = 0.0;
+    private String lastDescription = "";
 
     private DBWrapper dbWrapper = DBWrapper.getInstance();
 
@@ -56,14 +62,21 @@ public class BarController {
     public void initializeValues(){
 
         //Search data in initialization
-        HashMap<String, String> data = dbWrapper.searchData("name", "leafchild");
+        ArrayList<HashMap<String, String>> data = dbWrapper.searchData("name", "leafchild");
         //If found update values
         if (data.size() != 0) {
-            currentLevel = Integer.parseInt(data.get("currentLevel"));
-            currLvlNeededXp = Double.parseDouble(data.get("currLvlNeededXp"));
-            totalAmountOfXp = Double.parseDouble(data.get("totalAmountOfXp"));
-            currPrBarValue = Double.parseDouble(data.get("currPrBarValue"));
+            /*for(int i = 0; i < data.size(); i++) {
+                HashMap<String, String> stringStringHashMap =  data.get(i);
+            }*/
+            //Last result
+            currentLevel = Integer.parseInt(data.get(data.size() - 1).get("currentLevel"));
+            currLvlNeededXp = Double.parseDouble(data.get(data.size() -1).get("currLvlNeededXp"));
+            totalAmountOfXp = Double.parseDouble(data.get(data.size() -1).get("totalAmountOfXp"));
+            currPrBarValue = Double.parseDouble(data.get(data.size() -1).get("currPrBarValue"));
         }
+        //Initialize table
+        populateTable(data);
+
         pBar.setProgress(currPrBarValue);
         pInd.setProgress(currPrBarValue);
     }
@@ -72,10 +85,9 @@ public class BarController {
      * Default method that will be calling on app start
      */
     @FXML
-    protected void initialize() {
+    public void initialize() {
 
         initializeValues();
-        populateTable();
     }
 
     /**
@@ -87,7 +99,8 @@ public class BarController {
 
         String addValue = addField.getText();
         Double curr = pBar.getProgress();
-        if (checkAddValue(addValue)) {
+        lastDescription = tArea.getText();
+        if (checkAddValue(addValue) && !lastDescription.equals("")) {
             currPrBarValue = curr + calculatePercent(Double.parseDouble(addValue));
             if(currPrBarValue >= 1.0) {
                 showNewOKMessage("New Level!!!");
@@ -98,12 +111,16 @@ public class BarController {
                 currLvlNeededXp = currLvlNeededXp + currLvlNeededXp*0.4;
                 currentLevel = currentLevel + 1;
                 currPrBarValue = calculatePercent((currPrBarValue - 1.0) * 100);
+
+                //Cleanup the table
+                cleanupTable();
             }
             pBar.setProgress(currPrBarValue);
             pInd.setProgress(currPrBarValue);
 
             //Empty
             addField.setText("");
+            tArea.setText("");
 
             //Increase total
             totalAmountOfXp = totalAmountOfXp + Double.parseDouble(addValue);
@@ -112,7 +129,7 @@ public class BarController {
             updateTable();
         }
         else{
-            showNewOKMessage("Value should be a number");
+            showNewOKMessage("Value should be a number and description should not be empty");
         }
 
     }
@@ -122,7 +139,7 @@ public class BarController {
      * @param addValue - input value from user
      * @return true if it's number
      */
-    private boolean checkAddValue(String addValue){
+    private boolean checkAddValue(String addValue) {
 
         if (addValue != null) {
             String numberPattern = "^[0-9]*$";
@@ -147,7 +164,7 @@ public class BarController {
      * @param userInput - user input
      * @return calculated percent
      */
-    private double calculatePercent(double userInput){
+    private double calculatePercent(double userInput) {
 
         double result;
         result = userInput/currLvlNeededXp;
@@ -189,15 +206,15 @@ public class BarController {
     }
 
 
-    private void populateTable() {
+    private void populateTable(ArrayList<HashMap<String, String>> tableData) {
 
         tLevel.setCellValueFactory(new MapValueFactory<String>("currentLevel"));
-        tLevel.setMinWidth(30);
         tnLevel.setCellValueFactory(new MapValueFactory<String>("currLvlNeededXp"));
-        tnLevel.setMinWidth(30);
         tTotal.setCellValueFactory(new MapValueFactory<String>("totalAmountOfXp"));
-        tTotal.setMinWidth(30);
-        tableView.setItems(FXCollections.observableArrayList(collectCurrentData()));
+        tDescription.setCellValueFactory(new MapValueFactory<String>("description"));
+
+
+        tableView.setItems(FXCollections.observableArrayList(tableData));
 
         tableView.setEditable(false);
         tableView.getSelectionModel().setCellSelectionEnabled(true);
@@ -230,7 +247,7 @@ public class BarController {
 
     }
 
-    private HashMap<String, String> collectCurrentData(){
+    private HashMap<String, String> collectCurrentData() {
 
         HashMap<String, String> latestData = new HashMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
@@ -242,6 +259,7 @@ public class BarController {
         latestData.put("createdDate",dateFormat.format(new Date()));
         latestData.put("totalAmountOfXp", totalAmountOfXp + "");
         latestData.put("currPrBarValue", currPrBarValue + "");
+        latestData.put("description", lastDescription);
 
 
         return latestData;
@@ -258,27 +276,31 @@ public class BarController {
             currentLevel = 1;
             currPrBarValue = 0;
             totalAmountOfXp = 0;
+            cleanupTable();
             initializeValues();
-            updateTable();
             showNewOKMessage("Progress was removed");
         }
 
     }
 
 
-    private void updateTable(){
+    private void updateTable() {
 
         final ObservableList<HashMap<String, String>> items = tableView.getItems();
-        if( items == null || items.size() == 0) return;
-
-        //final HashMap<String, String> item = tableView.getItems().get(0);
-        items.remove(0);
+        //if( items == null || items.size() == 0) return;
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                items.add(0, collectCurrentData());
+                items.add(items.size(), collectCurrentData());
             }
         });
 
+    }
+
+    private void cleanupTable() {
+
+        final ObservableList<HashMap<String, String>> items = tableView.getItems();
+        if( items == null || items.size() == 0) return;
+            items.removeAll(items);
     }
 }
