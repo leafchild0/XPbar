@@ -57,7 +57,7 @@ public class BarController {
     private DBWrapper dbWrapper = DBWrapper.getInstance();
 
     /**
-     * Init class, called on app start to prepopulate values
+     * Init class, called on app start to pre-populate values
      */
     public void initializeValues(){
 
@@ -65,14 +65,11 @@ public class BarController {
         ArrayList<HashMap<String, String>> data = dbWrapper.searchData("name", "leafchild");
         //If found update values
         if (data.size() != 0) {
-            /*for(int i = 0; i < data.size(); i++) {
-                HashMap<String, String> stringStringHashMap =  data.get(i);
-            }*/
             //Last result
-            currentLevel = Integer.parseInt(data.get(data.size() - 1).get("currentLevel"));
-            currLvlNeededXp = Double.parseDouble(data.get(data.size() -1).get("currLvlNeededXp"));
-            totalAmountOfXp = Double.parseDouble(data.get(data.size() -1).get("totalAmountOfXp"));
-            currPrBarValue = Double.parseDouble(data.get(data.size() -1).get("currPrBarValue"));
+            currentLevel = Integer.parseInt(data.get(0).get("currentLevel"));
+            currLvlNeededXp = Double.parseDouble(data.get(0).get("currLvlNeededXp"));
+            totalAmountOfXp = Double.parseDouble(data.get(0).get("totalAmountOfXp"));
+            currPrBarValue = Double.parseDouble(data.get(0).get("currPrBarValue"));
         }
         //Initialize table
         populateTable(data);
@@ -233,7 +230,6 @@ public class BarController {
                     public Object fromString(String string) {
                         return string;
                     }
-                    //cell.setAlignment(Pos.CENTER);
                     });
                 cell.setAlignment(Pos.CENTER);
                 return cell;
