@@ -30,7 +30,7 @@ public class BarController {
     @FXML
     public TableColumn<Map, String> tTotal;
     @FXML
-    public TableColumn<Map, String> tLevel;
+    public TableColumn<Map, String> tAdded;
     @FXML
     public TableView<HashMap<String, String>> tableView;
     @FXML
@@ -39,6 +39,12 @@ public class BarController {
     public TableColumn<Map, String> tDescription;
     @FXML
     public TextArea tArea;
+    @FXML
+    public MenuBar menuBar;
+    @FXML
+    public Label curLevel;
+    @FXML
+    public Label totalXP;
     @FXML
     private TextField addField;
     @FXML
@@ -50,6 +56,7 @@ public class BarController {
 
     private double currLvlNeededXp = 100.0;
     private int currentLevel = 1;
+    private int addedValue = 1;
     private double totalAmountOfXp = 0.0;
     private double currPrBarValue = 0.0;
     private String lastDescription = "";
@@ -74,8 +81,13 @@ public class BarController {
         //Initialize table
         populateTable(data);
 
+        curLevel.setText(currentLevel + "");
+        totalXP.setText(((int) totalAmountOfXp) + "");
+
         pBar.setProgress(currPrBarValue);
         pInd.setProgress(currPrBarValue);
+
+        //menuBar.setPrefWidth(addButton.getScene().getWidth());
     }
 
     /**
@@ -108,10 +120,12 @@ public class BarController {
                 currLvlNeededXp = currLvlNeededXp + currLvlNeededXp*0.4;
                 currentLevel = currentLevel + 1;
                 currPrBarValue = calculatePercent((currPrBarValue - 1.0) * 100);
+                curLevel.setText(currentLevel + "");
 
                 //Cleanup the table
                 cleanupTable();
             }
+            addedValue = (int) Double.parseDouble(addValue);
             pBar.setProgress(currPrBarValue);
             pInd.setProgress(currPrBarValue);
 
@@ -121,6 +135,7 @@ public class BarController {
 
             //Increase total
             totalAmountOfXp = totalAmountOfXp + Double.parseDouble(addValue);
+            totalXP.setText(((int) totalAmountOfXp) + "");
 
             //Update table
             updateTable();
@@ -138,7 +153,7 @@ public class BarController {
      */
     private boolean checkAddValue(String addValue) {
 
-        if (addValue != null) {
+        if (addValue != null && !addValue.equals("")) {
             String numberPattern = "^[0-9]*$";
             return Pattern.matches(numberPattern, addValue);
         } else return false;
@@ -184,7 +199,7 @@ public class BarController {
     @FXML
     public void aboutApp() {
 
-        showNewOKMessage("XP Bar, V 0.2\n Designed by Victor Malyshev\n mailto: vmalyshev0@gmail.com");
+        showNewOKMessage("XP Bar, V 0.3\n Designed by Victor Malyshev\n mailto: vmalyshev0@gmail.com");
     }
 
     public void closeApp(ActionEvent actionEvent) {
@@ -205,11 +220,14 @@ public class BarController {
 
     private void populateTable(ArrayList<HashMap<String, String>> tableData) {
 
-        tLevel.setCellValueFactory(new MapValueFactory<String>("currentLevel"));
-        tnLevel.setCellValueFactory(new MapValueFactory<String>("currLvlNeededXp"));
-        tTotal.setCellValueFactory(new MapValueFactory<String>("totalAmountOfXp"));
+        tAdded.setCellValueFactory(new MapValueFactory<String>("addedValue"));
         tDescription.setCellValueFactory(new MapValueFactory<String>("description"));
 
+        //Show only for last level
+        for(int i = 0; i < tableData.size(); i++) {
+            HashMap<String, String> tempMap = tableData.get(i);
+            if(!tempMap.get("currentLevel").equals(currentLevel + "")) tableData.remove(tempMap);
+        }
 
         tableView.setItems(FXCollections.observableArrayList(tableData));
 
@@ -237,9 +255,8 @@ public class BarController {
 
             }
         };
-        tnLevel.setCellFactory(cellFactoryForMap);
-        tLevel.setCellFactory(cellFactoryForMap);
-        tTotal.setCellFactory(cellFactoryForMap);
+        tAdded.setCellFactory(cellFactoryForMap);
+        tDescription.setCellFactory(cellFactoryForMap);
 
     }
 
@@ -251,11 +268,12 @@ public class BarController {
 
         latestData.put("name","leafchild");
         latestData.put("currentLevel", currentLevel + "");
-        latestData.put("currLvlNeededXp", currLvlNeededXp + "");
+        latestData.put("currLvlNeededXp", (int) currLvlNeededXp + "");
         latestData.put("createdDate",dateFormat.format(new Date()));
-        latestData.put("totalAmountOfXp", totalAmountOfXp + "");
+        latestData.put("totalAmountOfXp", (int) totalAmountOfXp + "");
         latestData.put("currPrBarValue", currPrBarValue + "");
         latestData.put("description", lastDescription);
+        latestData.put("addedValue", addedValue + "");
 
 
         return latestData;

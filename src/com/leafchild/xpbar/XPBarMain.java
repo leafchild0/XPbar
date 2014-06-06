@@ -19,7 +19,7 @@ public class XPBarMain extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("xpBar.fxml"));
-        primaryStage.setTitle("XP bar v.0.2, Leafchild");
+        primaryStage.setTitle("XP bar v.0.3, Leafchild");
         primaryStage.setScene(new Scene(root, 600, 500));
         primaryStage.show();
         //primaryStage.setOnCloseRequest();

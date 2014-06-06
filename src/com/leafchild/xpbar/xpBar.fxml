@@ -13,7 +13,9 @@
     </rowConstraints>
 <children><Pane prefHeight="489.0" prefWidth="772.0">
 <children>
-    <MenuBar blendMode="SRC_ATOP" layoutX="-8.0" layoutY="-8.0" prefHeight="33.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml">
+<HBox alignment="TOP_LEFT" layoutX="-8.0" layoutY="-8.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<children>
+    <MenuBar focusTraversable="false" layoutX="-8.0" layoutY="-8.0" prefHeight="25.0" prefWidth="597.0" HBox.hgrow="ALWAYS" xmlns:fx="http://javafx.com/fxml">
         <menus>
             <Menu mnemonicParsing="false" text="File">
                 <items><MenuItem mnemonicParsing="false" onAction="#saveProgress" text="Save" />
@@ -32,19 +34,22 @@
             </Menu>
         </menus>
     </MenuBar>
+</children>
+</HBox>
     <TextField fx:id="addField" layoutX="173.0" layoutY="120.0" />
     <ProgressBar fx:id="pBar" layoutX="172.0" layoutY="58.0" prefWidth="200.0" progress="0.0" />
     <ProgressIndicator fx:id="pInd" layoutX="393.0" layoutY="38.0" progress="0.0" />
     <Button fx:id="addButton" layoutX="373.0" layoutY="120.0" mnemonicParsing="false" onAction="#handleButtonAction" text="Add" />
     <TextArea fx:id="tArea" layoutX="159.0" layoutY="177.0" prefHeight="101.0" prefWidth="263.0" />
-    <TableView fx:id="tableView" layoutX="41.0" layoutY="289.0" prefHeight="160.0" prefWidth="501.0" style="-fx-alignment: CENTER-RIGHT" xmlns:fx="http://javafx.com/fxml">
+    <TableView fx:id="tableView" layoutX="80.0" layoutY="305.0" prefHeight="160.0" prefWidth="422.0" style="-fx-alignment: CENTER-RIGHT" xmlns:fx="http://javafx.com/fxml">
   <columns>
-    <TableColumn fx:id="tLevel" editable="false" prefWidth="50.0" style="-fx-alignment: CENTER-RIGHT" text="Level" />
-    <TableColumn fx:id="tnLevel" editable="false" prefWidth="75.0" style="-fx-alignment: CENTER-RIGHT" text="Next Level" />
-    <TableColumn fx:id="tTotal" editable="false" prefWidth="75.0" style="-fx-alignment: CENTER-RIGHT" text="Total" />
-      <TableColumn fx:id="tDescription" editable="false" prefWidth="300.0" text="Description" />
+    <TableColumn fx:id="tAdded" editable="false" prefWidth="61.0" style="-fx-alignment: CENTER-RIGHT" text="Added" />
+      <TableColumn fx:id="tDescription" editable="false" prefWidth="359.0" text="Description" />
   </columns>
-</TableView>
+</TableView><Label layoutX="488.0048828125" layoutY="49.5" text="Level" />
+    <Label layoutX="480.0" layoutY="137.0" text="Total XP" />
+    <Label fx:id="curLevel" layoutX="493.0" layoutY="78.0" prefHeight="17.0" prefWidth="19.0" />
+    <Label fx:id="totalXP" layoutX="489.0" layoutY="160.0" prefHeight="17.0" prefWidth="27.0" />
 </children></Pane>
 </children>
 </GridPane>

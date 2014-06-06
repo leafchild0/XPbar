@@ -36,6 +36,8 @@ public class DBWrapper {
         try {
             mongo = new MongoClient("localhost", 27017);
             DB db = mongo.getDB("xpBar");
+            //test db
+            //DB db = mongo.getDB("test");
             table = db.getCollection("user");
         } catch(UnknownHostException e) {
             System.out.println("Exception: " + e);
@@ -71,6 +73,7 @@ public class DBWrapper {
             String currLvlNeededXp = (String) tempResult.get("currLvlNeededXp");
             String currPrBarValue = (String) tempResult.get("currPrBarValue");
             String description = (String) tempResult.get("description");
+            String addedValue = (String) tempResult.get("addedValue");
 
             //Put them into map
             HashMap<String, String> tempMap = new HashMap<>();
@@ -81,6 +84,7 @@ public class DBWrapper {
             tempMap.put("currLvlNeededXp", currLvlNeededXp);
             tempMap.put("currPrBarValue", currPrBarValue);
             tempMap.put("description", description);
+            tempMap.put("addedValue", addedValue);
 
             searchResults.add(tempMap);
         }
