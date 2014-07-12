@@ -58,7 +58,8 @@ public class DBWrapper {
     protected ArrayList<HashMap<String, String>> searchData(String key, String value){
 
         ArrayList<HashMap<String, String>> searchResults = new ArrayList<>();
-        BasicDBObject orderBy = new BasicDBObject("createdDate", -1);
+        //BasicDBObject orderBy = new BasicDBObject("createdDate", 1);
+        BasicDBObject orderBy = new BasicDBObject("currLvlNeededXp", -1);
 
         BasicDBObject searchQuery = new BasicDBObject();
         searchQuery.put(key, value);

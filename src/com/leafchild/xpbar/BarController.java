@@ -269,7 +269,7 @@ public class BarController {
         latestData.put("name","leafchild");
         latestData.put("currentLevel", currentLevel + "");
         latestData.put("currLvlNeededXp", (int) currLvlNeededXp + "");
-        latestData.put("createdDate",dateFormat.format(new Date()));
+        latestData.put("createdDate", dateFormat.format(new Date()));
         latestData.put("totalAmountOfXp", (int) totalAmountOfXp + "");
         latestData.put("currPrBarValue", currPrBarValue + "");
         latestData.put("description", lastDescription);
