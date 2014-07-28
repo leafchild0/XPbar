@@ -17,10 +17,7 @@ import se.mbaeumer.fxmessagebox.MessageBoxType;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class BarController {
@@ -69,7 +66,7 @@ public class BarController {
     public void initializeValues(){
 
         //Search data in initialization
-        ArrayList<HashMap<String, String>> data = dbWrapper.searchData("name", "leafchild");
+        ArrayList<LinkedHashMap<String, String>> data = dbWrapper.searchData("name", "leafchild");
         //If found update values
         if (data.size() != 0) {
             //Last result
@@ -218,18 +215,18 @@ public class BarController {
     }
 
 
-    private void populateTable(ArrayList<HashMap<String, String>> tableData) {
+    private void populateTable(ArrayList<LinkedHashMap<String, String>> tableData) {
 
         tAdded.setCellValueFactory(new MapValueFactory<String>("addedValue"));
         tDescription.setCellValueFactory(new MapValueFactory<String>("description"));
 
         //Show only for last level
         for(int i = 0; i < tableData.size(); i++) {
-            HashMap<String, String> tempMap = tableData.get(i);
+            LinkedHashMap<String, String> tempMap = tableData.get(i);
             if(!tempMap.get("currentLevel").equals(currentLevel + "")) tableData.remove(tempMap);
         }
 
-        tableView.setItems(FXCollections.observableArrayList(tableData));
+        tableView.setItems(FXCollections.<HashMap<String, String>>observableArrayList(tableData));
 
         tableView.setEditable(false);
         tableView.getSelectionModel().setCellSelectionEnabled(true);

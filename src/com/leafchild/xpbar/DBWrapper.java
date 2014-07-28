@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * Created by: vmalyshev
@@ -55,11 +56,13 @@ public class DBWrapper {
         table.insert(newData);
     }
 
-    protected ArrayList<HashMap<String, String>> searchData(String key, String value){
+    protected ArrayList<LinkedHashMap<String, String>> searchData(String key, String value){
 
-        ArrayList<HashMap<String, String>> searchResults = new ArrayList<>();
-        //BasicDBObject orderBy = new BasicDBObject("createdDate", 1);
-        BasicDBObject orderBy = new BasicDBObject("currLvlNeededXp", -1);
+        ArrayList<LinkedHashMap<String, String>> searchResults = new ArrayList<>();
+        BasicDBObject orderBy = new BasicDBObject("createdDate", -1);
+        //BasicDBObject orderBy = new BasicDBObject("currLvlNeededXp", 1);
+        //BasicDBObject orderByTotal = new BasicDBObject("totalAmountOfXp", -1);
+        //BasicDBObject orderByTotal = new BasicDBObject("key", -1);
 
         BasicDBObject searchQuery = new BasicDBObject();
         searchQuery.put(key, value);
@@ -77,7 +80,7 @@ public class DBWrapper {
             String addedValue = (String) tempResult.get("addedValue");
 
             //Put them into map
-            HashMap<String, String> tempMap = new HashMap<>();
+            LinkedHashMap<String, String> tempMap = new LinkedHashMap<>();
             tempMap.put("name", name);
             tempMap.put("currentLevel", level + "");
             tempMap.put("createdDate", createdDate);
