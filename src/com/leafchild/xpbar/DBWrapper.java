@@ -3,9 +3,7 @@ package com.leafchild.xpbar;
 import com.mongodb.*;
 
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -59,7 +57,7 @@ public class DBWrapper {
     protected ArrayList<LinkedHashMap<String, String>> searchData(String key, String value){
 
         ArrayList<LinkedHashMap<String, String>> searchResults = new ArrayList<>();
-        BasicDBObject orderBy = new BasicDBObject("createdDate", -1);
+        BasicDBObject orderBy = new BasicDBObject("_id", -1);
         //BasicDBObject orderBy = new BasicDBObject("currLvlNeededXp", 1);
         //BasicDBObject orderByTotal = new BasicDBObject("totalAmountOfXp", -1);
         //BasicDBObject orderByTotal = new BasicDBObject("key", -1);
