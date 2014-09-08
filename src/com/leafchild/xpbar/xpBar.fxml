@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -11,45 +10,51 @@
     <rowConstraints>
         <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" vgrow="SOMETIMES" />
     </rowConstraints>
-<children><Pane prefHeight="489.0" prefWidth="772.0">
-<children>
-<HBox alignment="TOP_LEFT" layoutX="-8.0" layoutY="-8.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-<children>
-    <MenuBar focusTraversable="false" layoutX="-8.0" layoutY="-8.0" prefHeight="25.0" prefWidth="597.0" HBox.hgrow="ALWAYS" xmlns:fx="http://javafx.com/fxml">
-        <menus>
-            <Menu mnemonicParsing="false" text="File">
-                <items><MenuItem mnemonicParsing="false" onAction="#saveProgress" text="Save" />
-                    <MenuItem mnemonicParsing="false" onAction="#closeApp" text="Close" />
-                </items>
-            </Menu>
-            <Menu mnemonicParsing="false" text="Edit">
-                <items>
-                    <MenuItem mnemonicParsing="false" onAction="#deleteCurrentData" text="Delete pgogress" />
-                </items>
-            </Menu>
-            <Menu mnemonicParsing="false" text="Help">
-                <items>
-                    <MenuItem fx:id="about" mnemonicParsing="false" onAction="#aboutApp" text="About" />
-                </items>
-            </Menu>
-        </menus>
-    </MenuBar>
-</children>
-</HBox>
-    <TextField fx:id="addField" layoutX="173.0" layoutY="120.0" />
-    <ProgressBar fx:id="pBar" layoutX="172.0" layoutY="58.0" prefWidth="200.0" progress="0.0" />
-    <ProgressIndicator fx:id="pInd" layoutX="393.0" layoutY="38.0" progress="0.0" />
-    <Button fx:id="addButton" layoutX="373.0" layoutY="120.0" mnemonicParsing="false" onAction="#handleButtonAction" text="Add" />
-    <TextArea fx:id="tArea" layoutX="159.0" layoutY="177.0" prefHeight="101.0" prefWidth="263.0" />
-    <TableView fx:id="tableView" layoutX="80.0" layoutY="305.0" prefHeight="160.0" prefWidth="422.0" style="-fx-alignment: CENTER-RIGHT" xmlns:fx="http://javafx.com/fxml">
-  <columns>
-    <TableColumn fx:id="tAdded" editable="false" prefWidth="61.0" style="-fx-alignment: CENTER-RIGHT" text="Added" />
-      <TableColumn fx:id="tDescription" editable="false" prefWidth="359.0" text="Description" />
-  </columns>
-</TableView><Label layoutX="488.0048828125" layoutY="49.5" text="Level" />
-    <Label layoutX="480.0" layoutY="137.0" text="Total XP" />
-    <Label fx:id="curLevel" layoutX="493.0" layoutY="78.0" prefHeight="17.0" prefWidth="19.0" />
-    <Label fx:id="totalXP" layoutX="489.0" layoutY="160.0" prefHeight="17.0" prefWidth="27.0" />
-</children></Pane>
-</children>
+    <children>
+        <Pane prefHeight="489.0" prefWidth="772.0">
+            <children>
+                <HBox alignment="TOP_LEFT" layoutX="-8.0" layoutY="-8.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+                    <children>
+                        <MenuBar focusTraversable="false" layoutX="-8.0" layoutY="-8.0" prefHeight="25.0" prefWidth="597.0" HBox.hgrow="ALWAYS" xmlns:fx="http://javafx.com/fxml">
+                            <menus>
+                                <Menu mnemonicParsing="false" text="File">
+                                    <items>
+                                        <MenuItem mnemonicParsing="false" onAction="#saveProgress" text="Save" />
+                                        <MenuItem fx:id="importData" mnemonicParsing="false" onAction="#importAllTheDatainFile" text="Import" />
+                                        <MenuItem fx:id="export" mnemonicParsing="false" onAction="#exportAllTheDatainFile" text="Export " />
+                                        <MenuItem mnemonicParsing="false" onAction="#closeApp" text="Close" />
+                                    </items>
+                                </Menu>
+                                <Menu mnemonicParsing="false" text="Edit">
+                                    <items>
+                                        <MenuItem mnemonicParsing="false" onAction="#deleteCurrentData" text="Delete pgogress" />
+                                    </items>
+                                </Menu>
+                                <Menu mnemonicParsing="false" text="Help">
+                                    <items>
+                                        <MenuItem fx:id="about" mnemonicParsing="false" onAction="#aboutApp" text="About" />
+                                    </items>
+                                </Menu>
+                            </menus>
+                        </MenuBar>
+                    </children>
+                </HBox>
+                <TextField fx:id="addField" layoutX="173.0" layoutY="120.0" />
+                <ProgressBar fx:id="pBar" layoutX="172.0" layoutY="58.0" prefWidth="200.0" progress="0.0" />
+                <ProgressIndicator fx:id="pInd" layoutX="393.0" layoutY="38.0" progress="0.0" />
+                <Button fx:id="addButton" layoutX="373.0" layoutY="120.0" mnemonicParsing="false" onAction="#handleButtonAction" text="Add" />
+                <TextArea fx:id="tArea" layoutX="159.0" layoutY="177.0" prefHeight="101.0" prefWidth="263.0" />
+                <TableView fx:id="tableView" layoutX="80.0" layoutY="305.0" prefHeight="160.0" prefWidth="422.0" style="-fx-alignment: CENTER-RIGHT" xmlns:fx="http://javafx.com/fxml">
+                    <columns>
+                        <TableColumn fx:id="tAdded" editable="false" prefWidth="61.0" style="-fx-alignment: CENTER-RIGHT" text="Added" />
+                        <TableColumn fx:id="tDescription" editable="false" prefWidth="359.0" text="Description" />
+                    </columns>
+                </TableView>
+                <Label layoutX="488.0048828125" layoutY="49.5" text="Level" />
+                <Label layoutX="480.0" layoutY="137.0" text="Total XP" />
+                <Label fx:id="curLevel" layoutX="493.0" layoutY="78.0" prefHeight="17.0" prefWidth="19.0" />
+                <Label fx:id="totalXP" layoutX="489.0" layoutY="160.0" prefHeight="17.0" prefWidth="27.0" />
+            </children>
+        </Pane>
+    </children>
 </GridPane>

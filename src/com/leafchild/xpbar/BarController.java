@@ -9,12 +9,14 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import se.mbaeumer.fxmessagebox.MessageBox;
 import se.mbaeumer.fxmessagebox.MessageBoxType;
 
+import java.io.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -22,10 +24,6 @@ import java.util.regex.Pattern;
 
 public class BarController {
 
-    @FXML
-    public TableColumn<Map, String> tnLevel;
-    @FXML
-    public TableColumn<Map, String> tTotal;
     @FXML
     public TableColumn<Map, String> tAdded;
     @FXML
@@ -37,11 +35,13 @@ public class BarController {
     @FXML
     public TextArea tArea;
     @FXML
-    public MenuBar menuBar;
-    @FXML
     public Label curLevel;
     @FXML
     public Label totalXP;
+    @FXML
+    public MenuItem export;
+    @FXML
+    public MenuItem importData;
     @FXML
     private TextField addField;
     @FXML
@@ -57,6 +57,7 @@ public class BarController {
     private double totalAmountOfXp = 0.0;
     private double currPrBarValue = 0.0;
     private String lastDescription = "";
+    private Stage primaryStage;
 
     private DBWrapper dbWrapper = DBWrapper.getInstance();
 
@@ -167,7 +168,6 @@ public class BarController {
         mb.showAndWait();
         return mb.getMessageBoxResult().name();
     }
-
     /**
      * Calculates percent depends on current level
      * @param userInput - user input
@@ -182,6 +182,7 @@ public class BarController {
 
         return result;
     }
+
 
     /**
      * Saves progress when user clicks on Save in menu
@@ -201,7 +202,7 @@ public class BarController {
 
     public void closeApp(ActionEvent actionEvent) {
 
-        Stage primaryStage = (Stage) addButton.getScene().getWindow();
+        primaryStage = (Stage) addButton.getScene().getWindow();
         MenuItem menuItem = (MenuItem) actionEvent.getTarget();
         if (menuItem.getText().equals("Close")){
 
@@ -257,20 +258,20 @@ public class BarController {
 
     }
 
-    private HashMap<String, String> collectCurrentData() {
+    private HashMap<String, Object> collectCurrentData() {
 
-        HashMap<String, String> latestData = new HashMap<>();
+        HashMap<String, Object> latestData = new HashMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
 
         latestData.put("name","leafchild");
-        latestData.put("currentLevel", currentLevel + "");
-        latestData.put("currLvlNeededXp", (int) currLvlNeededXp + "");
+        latestData.put("currentLevel", currentLevel);
+        latestData.put("currLvlNeededXp", (int) currLvlNeededXp);
         latestData.put("createdDate", dateFormat.format(new Date()));
-        latestData.put("totalAmountOfXp", (int) totalAmountOfXp + "");
-        latestData.put("currPrBarValue", currPrBarValue + "");
+        latestData.put("totalAmountOfXp", (int) totalAmountOfXp);
+        latestData.put("currPrBarValue", currPrBarValue);
         latestData.put("description", lastDescription);
-        latestData.put("addedValue", addedValue + "");
+        latestData.put("addedValue", addedValue);
 
 
         return latestData;
@@ -297,7 +298,7 @@ public class BarController {
 
     private void updateTable() {
 
-        final ObservableList<HashMap<String, String>> items = tableView.getItems();
+        final ObservableList items = tableView.getItems();
         //if( items == null || items.size() == 0) return;
         Platform.runLater(new Runnable() {
             @Override
@@ -313,5 +314,128 @@ public class BarController {
         final ObservableList<HashMap<String, String>> items = tableView.getItems();
         if( items == null || items.size() == 0) return;
             items.removeAll(items);
+    }
+
+    public void exportAllTheDatainFile(ActionEvent actionEvent) {
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Saves Exported Data To");
+        boolean isSaved;
+
+        //Set to user directory or go to default if cannot access
+        String userDirectoryString = System.getProperty("user.home");
+        File userDirectory = new File(userDirectoryString);
+        fileChooser.setInitialDirectory(userDirectory);
+        // Set extension filter
+        FileChooser.ExtensionFilter extFilter =
+                new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        // Show save file dialog
+        File file = fileChooser.showSaveDialog(primaryStage);
+        if(file != null){
+            isSaved = saveAllDataFromDB(file);
+
+            if(isSaved) showNewOKMessage("All the data was exported");
+        }
+    }
+
+    private boolean saveAllDataFromDB(File file) {
+
+        FileWriter fileWriter;
+        boolean result = true;
+        try {
+            //Get the data
+            ArrayList<LinkedHashMap<String, String>> allData = dbWrapper.searchData("name", "leafchild");
+
+            if(!file.getName().contains(".json")) file = new File(file.getAbsolutePath() + ".json");
+            fileWriter = new FileWriter(file);
+            fileWriter.write(allData.toString().replace("},", "},\n"));
+            fileWriter.close();
+        } catch (IOException ex) {
+            showNewOKMessage("ERROR during saving the file");
+            result = false;
+        }
+
+        return result;
+    }
+
+    public void importAllTheDatainFile(ActionEvent actionEvent) {
+
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Import from");
+        boolean isRestored = false;
+
+        //Set to user directory or go to default if cannot access
+        String userDirectoryString = System.getProperty("user.home");
+        File userDirectory = new File(userDirectoryString);
+        fileChooser.setInitialDirectory(userDirectory);
+        // Set extension filter
+        FileChooser.ExtensionFilter extFilter =
+                new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        // Show save file dialog
+        File file = fileChooser.showOpenDialog(primaryStage);
+        if(file != null){
+            String answer = showNewQuestionMessage("Are you sure? Importing will remove all the old data");
+            if(answer.equals("YES")){
+                isRestored = importDataToDB(file);
+            }
+
+
+            if(isRestored) {
+                showNewOKMessage("All the data was imported from " + file.getName());
+                initializeValues();
+            }
+        }
+    }
+
+    private boolean importDataToDB(File file) {
+
+        BufferedReader reader;
+        boolean result = true;
+        String tempLine;
+        HashMap<String, Object> tempMap;
+
+        try {
+
+            //Then need cleanup the data from DB
+            dbWrapper.removeUserData("name", "leafchild");
+            //Get the data
+            reader = new BufferedReader(new FileReader(file));
+            while ((tempLine = reader.readLine()) != null) {
+
+                //Need to create a HashMap with this data
+                tempMap = new HashMap<>();
+
+                if(tempLine.contains("[") || tempLine.contains("]")) tempLine = tempLine.replace("]", "").replace("[", "");
+                if(tempLine.contains("{")) tempLine = tempLine.replace("{", "");
+                if(tempLine.contains("},")) tempLine = tempLine.replace("}", "");
+                String [] decription = tempLine.split(", description=");
+                String[] mapData = decription[0].split(",");
+                for (int i = 0; i < mapData.length; i++) {
+
+                    String tempPair =  mapData[i];
+                    String [] keyValue = tempPair.split("=");
+                    tempMap.put(keyValue[0].trim(), keyValue[1]);
+
+                }
+                //Hooray
+                String descriptionWithAdded = decription[1].substring(0, decription[1].length() - 1);
+                String [] descriptionWithAddedArray = descriptionWithAdded.split("addedValue=");
+
+                tempMap.put("description", descriptionWithAddedArray[0]);
+                tempMap.put("addedValue", descriptionWithAddedArray[1]);
+                //Exact 8 pairs
+                if(tempMap.size() == 8) dbWrapper.insertData(tempMap);
+            }
+        } catch (IOException ex) {
+            showNewOKMessage("ERROR during saving the file");
+            result = false;
+        }
+
+        return result;
     }
 }

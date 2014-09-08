@@ -6,6 +6,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.net.URL;
+
 /**
  * Created by: vmalyshev
  * Project: XPbar
@@ -22,7 +25,6 @@ public class XPBarMain extends Application {
         primaryStage.setTitle("XP bar v.0.3, Leafchild");
         primaryStage.setScene(new Scene(root, 600, 500));
         primaryStage.show();
-        //primaryStage.setOnCloseRequest();
 
     }
 

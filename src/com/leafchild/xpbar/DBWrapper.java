@@ -43,7 +43,7 @@ public class DBWrapper {
         }
     }
 
-    protected void insertData(HashMap<String, String> data){
+    protected void insertData(HashMap<String, Object> data){
 
         BasicDBObject newData = new BasicDBObject();
 
@@ -57,10 +57,7 @@ public class DBWrapper {
     protected ArrayList<LinkedHashMap<String, String>> searchData(String key, String value){
 
         ArrayList<LinkedHashMap<String, String>> searchResults = new ArrayList<>();
-        BasicDBObject orderBy = new BasicDBObject("_id", -1);
-        //BasicDBObject orderBy = new BasicDBObject("currLvlNeededXp", 1);
-        //BasicDBObject orderByTotal = new BasicDBObject("totalAmountOfXp", -1);
-        //BasicDBObject orderByTotal = new BasicDBObject("key", -1);
+        BasicDBObject orderBy = new BasicDBObject("totalAmountOfXp", 1);
 
         BasicDBObject searchQuery = new BasicDBObject();
         searchQuery.put(key, value);
@@ -70,23 +67,23 @@ public class DBWrapper {
             DBObject tempResult = cursor.next();
             String createdDate = (String) tempResult.get("createdDate");
             String name = (String) tempResult.get("name");
-            String level = (String) tempResult.get("currentLevel");
-            String totalAmountOfXp = (String) tempResult.get("totalAmountOfXp");
-            String currLvlNeededXp = (String) tempResult.get("currLvlNeededXp");
-            String currPrBarValue = (String) tempResult.get("currPrBarValue");
+            Object level = tempResult.get("currentLevel");
+            Object totalAmountOfXp = tempResult.get("totalAmountOfXp");
+            Object currLvlNeededXp = tempResult.get("currLvlNeededXp");
+            Object currPrBarValue = tempResult.get("currPrBarValue");
             String description = (String) tempResult.get("description");
-            String addedValue = (String) tempResult.get("addedValue");
+            Object addedValue = tempResult.get("addedValue");
 
             //Put them into map
             LinkedHashMap<String, String> tempMap = new LinkedHashMap<>();
             tempMap.put("name", name);
             tempMap.put("currentLevel", level + "");
             tempMap.put("createdDate", createdDate);
-            tempMap.put("totalAmountOfXp", totalAmountOfXp);
-            tempMap.put("currLvlNeededXp", currLvlNeededXp);
-            tempMap.put("currPrBarValue", currPrBarValue);
+            tempMap.put("totalAmountOfXp", totalAmountOfXp + "");
+            tempMap.put("currLvlNeededXp", currLvlNeededXp + "");
+            tempMap.put("currPrBarValue", currPrBarValue + "");
             tempMap.put("description", description);
-            tempMap.put("addedValue", addedValue);
+            tempMap.put("addedValue", addedValue + "");
 
             searchResults.add(tempMap);
         }
